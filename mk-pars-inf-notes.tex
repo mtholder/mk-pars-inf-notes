@@ -91,9 +91,11 @@ The set of singleton states is the empty set in the case of
 	constant character.
 When $N \leq K$, one must consider the possibility that no state is repeated.
 
-Let $\mathcal{A}$ denote the alhabet of states (so $|\mathcal{A}| = K$).
-Let, $\mathcal{S}(y)$ denote $\mathcal{A} - y$; this is the set of 
-	states other than some state $y$.
+Let $\mathcal{A}$ denote the alphabet of states (so $|\mathcal{A}| = K$).
+Let, $\mathcal{B}(y)$ denote $\mathcal{A} - y$; this is the set of 
+	states other than some state $y$; and
+	$\mathcal{B}(y, w)$ denote $\mathcal{A} - w - y$; this is the set of states excluding state $y$ and state $w$.
+Let $\mathcal{S}(y)$ the power set of $\mathcal{B}(y)$.
 
 Below we will suppress the index ($i$ above) that indicates which character we are correcting.
 The ascertainment bias correction depends only on the tree and branch length induced by considering leaves that are scored (not missing data).
@@ -130,14 +132,29 @@ Let $l(z)$ and $r(z)$ denote the the left and right children of node($z$).
 Let $\nu_{l(z)}$ and $\nu_{r(z)}$ denote the  branch lengths leading to the left and right children of node($z$).
 
 \subsection{Parent of a cherry}
-If $z$ is the parent of two tips then initialize $Y[z][][][]$ using the following rules:
+If $z$ is the parent of two tips then initialize $Y[z][][][]$ using the following rules
 
+For every $c\in \mathcal{A}$:
 \begin{eqnarray*}
 Y[z][c][\emptyset][c] & = & \Pr(c\rightarrow c\mid \nu_{l(z)})\Pr(c\rightarrow c\mid \nu_{r(z)})
 \end{eqnarray*}
 where  $\Pr(i\rightarrow j\mid \nu_{k})$ denotes the probability of an 
 	seeing the descendant state $j$ if the ancestral state is $i$ and 
 	the edge length is $\nu_{k}$.
+
+
+For every $c\in \mathcal{A}$ and every single state $d \in \mathcal{B}(c)$:
+\begin{eqnarray*}
+Y[z][\emptyset][\{c,d\}][c] & = & \Pr(c\rightarrow c\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)}) + \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow c\mid \nu_{r(z)}) \\
+Y[z][d][\emptyset][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)})
+\end{eqnarray*}
+
+For every $c\in \mathcal{A}$ and every single state $d \in \mathcal{B}(c)$ and every single state $f\in\mathcal{B}(c,d)$:
+\begin{eqnarray*}
+Y[z][\emptyset][\{d,f\}][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow f\mid \nu_{r(z)}) + \Pr(c\rightarrow f\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)})
+\end{eqnarray*}
+
+All other elements of $Y[z][][][]$ are set to 0.
 
 \bibliography{refs}
 \end{document}
