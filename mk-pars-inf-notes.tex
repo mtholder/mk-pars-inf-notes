@@ -172,5 +172,22 @@ V(z, r, s, d, f) & := &\sum_{t\in \mathcal{S}(r)}\Bigg(Y[l(z)][r][t][d] Y[r(z)][
 & & \ldots + Y[l(z)][\emptyset][r + t][d] Y[r(z)][\emptyset][r + s - t][f] \Bigg)
 \end{eqnarray*}
 
+
+\subsection{Parent of one internal and one terminal}
+Without loss of generality, consider rotating the node such that 
+the left child is the terminal:
+For every $r\in \mathcal{A}$, $c\in \mathcal{A}$ and $s\in\mathcal{S}(c)$:
+\begin{eqnarray*}
+Y[z][r][s][c] & = & \sum_{d\in \mathcal{A}}Pr(c\rightarrow d\mid \nu_{l(z)})\sum_{f\in \mathcal{A}}Pr(c\rightarrow f\mid \nu_{r(z)}) W(z, r, s, d, f)
+\end{eqnarray*}
+where if $d = r$:
+\begin{eqnarray*}
+W(z, r, s, d, f) & := & Y[r(z)][r][s][f] + Y[r(z)][\emptyset][r + s][f]
+\end{eqnarray*}
+if $d \neq r$:
+\begin{eqnarray*}
+W(z, r, s, d, f) & := &Y[r(z)][r][s - d][f]
+\end{eqnarray*}
+
 \bibliography{refs}
 \end{document}
