@@ -95,7 +95,8 @@ Let $\mathcal{A}$ denote the alphabet of states (so $|\mathcal{A}| = K$).
 Let, $\mathcal{B}(y)$ denote $\mathcal{A} - y$; this is the set of 
 	states other than some state $y$; and
 	$\mathcal{B}(y, w)$ denote $\mathcal{A} - w - y$; this is the set of states excluding state $y$ and state $w$.
-Let $\mathcal{S}(y)$ the power set of $\mathcal{B}(y)$.
+Let $\mathcal{S}(y)$ be the power set of $\mathcal{B}(y)$.
+Similarly $\mathcal{S}(y, w)$ is the power set of $\mathcal{B}(y, w)$.
 
 Below we will suppress the index ($i$ above) that indicates which character we are correcting.
 The ascertainment bias correction depends only on the tree and branch length induced by considering leaves that are scored (not missing data).
@@ -155,6 +156,21 @@ Y[z][\emptyset][\{d,f\}][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\righta
 \end{eqnarray*}
 
 All other elements of $Y[z][][][]$ are set to 0.
+
+\subsection{Parent of two internals}
+If $z$ is the parent of two other internal nodes do the following.
+
+For every $r\in \mathcal{A}$, $c\in \mathcal{A}$ and $s\in\mathcal{S}(c)$:
+\begin{eqnarray*}
+Y[z][r][s][c] & = & \sum_{d\in \mathcal{A}}Pr(c\rightarrow d\mid \nu_{l(z)})\sum_{f\in \mathcal{A}}Pr(c\rightarrow f\mid \nu_{r(z)}) V(z, r, s, d, f) \\
+V(z, r, s, d, f) & := &\sum_{t\in \mathcal{S}(r)}\Bigg(Y[l(z)][r][t][d] Y[r(z)][r][s - t][f]
+\\ 
+& & \ldots + Y[l(z)][r][t][d] Y[r(z)][\emptyset][s - t][f] \\
+& & \ldots + Y[l(z)][r][t][d] Y[r(z)][\emptyset][r + s - t][f]\\
+& & \ldots + Y[l(z)][\emptyset][t][d] Y[r(z)][r][s - t][f] \\
+& & \ldots + Y[l(z)][\emptyset][r + t][d] Y[r(z)][r][s - t][f]\\
+& & \ldots + Y[l(z)][\emptyset][r + t][d] Y[r(z)][\emptyset][r + s - t][f] \Bigg)
+\end{eqnarray*}
 
 \bibliography{refs}
 \end{document}
