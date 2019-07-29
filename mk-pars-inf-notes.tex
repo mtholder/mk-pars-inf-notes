@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\usepackage{wrapfig}
+\textwidth = 6.5 in
+\textheight = 9 in
+\oddsidemargin = 0.0 in
+\evensidemargin = 0.0 in
+\topmargin = 0.0 in
+\headheight = 0.0 in
+\headsep = 0.0 in
+\parskip = 0.2in
+\parindent = 0.0in
+\usepackage{setspace}
+\singlespacing
+
+\usepackage{titlesec}
+\usepackage{paralist} %compactenum
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}{Definition}
+\usepackage{tipa}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage[mathscr]{eucal}
+
+\titlespacing*{\section}{0cm}{1mm}{-3mm}
+\titlespacing*{\subsection}{0cm}{-3mm}{-3mm}
+% Use the natbib package for the bibliography
+\usepackage[round]{natbib}
+\bibliographystyle{apalike} 
+\newcommand{\exampleMacro}[1]{\mu_{#1}}
+\usepackage{xspace}
+\usepackage{url}
+
+\usepackage{algorithm}% http://ctan.org/pkg/algorithms
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+
+\usepackage{amsfonts}
+\usepackage{hyperref}
+
+\hypersetup{backref,  linkcolor=blue, citecolor=red, colorlinks=true, hyperindex=true}
+
+\newcounter{myFigCounter}
+\begin{document}
+\tableofcontents
+\section{Background}
+\citet{Lewis2001} discussed the need to correct likelihood calculations of discrete morphological traits for ascertainment biases that exclude the possibility of a character being constant.
+The model that corrects for this ascertainment bias is referred to as the M$k_v$ model.
+The correction entails calculating:
+$ \Pr(X \mid T, \mbox{each character is variable})$ rather than
+$\Pr(X \mid T)$, where $X$ is the data matrix and $T$ is the tree.
+\begin{eqnarray*}
+\Pr(X \mid T, \mbox{each character is variable}) & = & \prod_{i=1}^M\Pr(x_i \mid T, x_i\mbox{ is variable})
+\end{eqnarray*}
+where $M$ is the number of characters (columns) in the data matrix.
+Fortunately,
+$$\Pr(x_i \mid T, x_i\mbox{ is variable})\Pr(x_i\mbox{ is variable}\mid T) = \Pr(x_i\mid T)$$
+so:
+$$\Pr(x_i \mid T, x_i\mbox{ is variable}) = \frac{\Pr(x_i\mid T)}{\Pr(x_i\mbox{ is variable}\mid T)}$$
+$\Pr(x_i\mbox{ is variable}\mid T)$ is typically calculated by augmenting the real data matrix with a set of ``fake'' columns of constant characters:
+\begin{eqnarray*}
+\Pr(x_i\mbox{ is variable}\mid T) & = & 1 -\Pr(x_i\mbox{ is constant}\mid T) \\
+& = & 1 - \sum_{j=1}^K\Pr(C(j)\mid T)
+\end{eqnarray*}
+where $K$ is the number of character states and $C(j)$ denotes a 
+character that is made up of a column of taxa all displaying state $j$.
+Because there are only $K$ fake columns for every character, the calculation is only $(1+K)$ times slower than a likelihood calculation that does not correct for ascertainment bias.
+
+
+As noted by \citet{MatzkeI2018}, if a researcher only collects parsimony informative sites, then a different form of ascertainment bias correction is needed.
+One could sum up all of the parsimony uninformative sites:
+\begin{eqnarray*}
+\Pr(x_i\mbox{ is informative}\mid T) & = & 1 -\Pr(x_i\mbox{ is uninformative}\mid T) \\
+& = & 1 - \sum_{j\in \mathcal{U}} \Pr(j\mid T)
+\end{eqnarray*}
+where $\mathcal{U}$ denotes the set of all columns that are parsimony-uninformative.
+However the size of $\mathcal{U}$ grows as a function of the number of tips ($N$).
+Indeed it grows quickly for $K>2$.
+Here we describe a dynamic programming approach that avoids the need to
+	enumerate all uninformative patterns.
+This let's us calculate
+$\Pr(x_i\mbox{ is uninformative}\mid T)$
+more efficiently.
+
+\section*{Algorithm}
+For the typical case $N > K$, and a parsimony informative character 
+is one that has one repeatedly observed state and a set of singleton states. 
+The set of singleton states is the empty set in the case of 
+	constant character.
+When $N \leq K$, one must consider the possibility that no state is repeated.
+
+Let $\mathcal{A}$ denote the alhabet of states (so $|\mathcal{A}| = K$).
+Let, $\mathcal{S}(y)$ denote $\mathcal{A} - y$; this is the set of 
+	states other than some state $y$.
+
+Below we will suppress the index ($i$ above) that indicates which character we are correcting.
+The ascertainment bias correction depends only on the tree and branch length induced by considering leaves that are scored (not missing data).
+Thus the calculations do not depend on the specific states of column
+$x_i$; so using $x$ is sufficient.
+
+We want to calculate $\Pr(x\mbox{ is uninformative}\mid T) = \Pr(x\in \mathcal{U}\mid T)$
+\begin{eqnarray*}
+\Pr(x\in \mathcal{U}\mid T) & = & \mathcal{D}(T) + \sum_{r\in \mathcal{A}}\sum_{s\in\mathcal{S}(r)}\Pr(\mbox{r}=r, \mbox{s}=s\mid T)
+\end{eqnarray*}
+where ``r'' is the random variable representing the repeated state; ``s'' is the random variable representing the singelton state set; and 
+$\mathcal{D}(T)$ is the summation (only needed for small trees) over
+all patterns with no repeated states:
+\begin{eqnarray*}
+\mathcal{D}(T) = \sum_{s\in\mathcal{S}(\emptyset)}\Pr(\mbox{r}=\emptyset, \mbox{s}=s\mid T)
+\end{eqnarray*}
+
+
+We can calculate $\Pr(\mbox{r}=r, \mbox{s}=s\mid T)$ via postorder traversal similar to Felsenstein's pruning algorithm.
+Let $z$ denote an internal node, and let the lookup table element
+$Y[z][r][s][c]$ hold
+the probability of observing repeated state $r$ and singleton state set $s$ among the descendants of node $z$ if node $z$ had ancestral
+character state $c$.
+
+If $\rho$ denotes the node indicator for the root of the tree, then
+\begin{eqnarray*}
+\Pr(\mbox{r}=r, \mbox{s}=s\mid T) & = & \sum_{c\in\mathcal{A}} \pi_c Y[\rho][r][s][c]\\
+\end{eqnarray*}
+where $\pi_c$ is the root prior probability of state $c$ (which is
+usually the equilibrium state frequency of $c$).
+
+
+Let $l(z)$ and $r(z)$ denote the the left and right children of node($z$).
+Let $\nu_{l(z)}$ and $\nu_{r(z)}$ denote the  branch lengths leading to the left and right children of node($z$).
+
+\subsection{Parent of a cherry}
+If $z$ is the parent of two tips then initialize $Y[z][][][]$ using the following rules:
+
+\begin{eqnarray*}
+Y[z][c][\emptyset][c] & = & \Pr(c\rightarrow c\mid \nu_{l(z)})\Pr(c\rightarrow c\mid \nu_{r(z)})
+\end{eqnarray*}
+where  $\Pr(i\rightarrow j\mid \nu_{k})$ denotes the probability of an 
+	seeing the descendant state $j$ if the ancestral state is $i$ and 
+	the edge length is $\nu_{k}$.
+
+\bibliography{refs}
+\end{document}
