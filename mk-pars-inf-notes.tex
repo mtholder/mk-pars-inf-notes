@@ -159,13 +159,13 @@ If $z$ is the parent of two other internal nodes do the following.
 For every $r\in \mathcal{A}$, $c\in \mathcal{A}$ and $s\in\mathcal{S}(c)$:
 \begin{eqnarray*}
 Y[z][r][s][c] & = & \sum_{d\in \mathcal{A}}Pr(c\rightarrow d\mid \nu_{l(z)})\sum_{f\in \mathcal{A}}Pr(c\rightarrow f\mid \nu_{r(z)}) V(z, r, s, d, f) \\
-V(z, r, s, d, f) & := &\sum_{t\in \mathcal{S}(r)}\Bigg(Y[l(z)][r][t][d] Y[r(z)][r][s - t][f]
+V(z, r, s, d, f) & := &\sum_{t\in \mathcal{S}(r)}\Bigg(Y[l(z)][r][t][d] \times Y[r(z)][r][s - t][f]
 \\ 
-& & \ldots + Y[l(z)][r][t][d] Y[r(z)][\emptyset][s - t][f] \\
-& & \ldots + Y[l(z)][r][t][d] Y[r(z)][\emptyset][r + s - t][f]\\
-& & \ldots + Y[l(z)][\emptyset][t][d] Y[r(z)][r][s - t][f] \\
-& & \ldots + Y[l(z)][\emptyset][r + t][d] Y[r(z)][r][s - t][f]\\
-& & \ldots + Y[l(z)][\emptyset][r + t][d] Y[r(z)][\emptyset][r + s - t][f] \Bigg)
+& & \ldots + Y[l(z)][r][t][d] \times Y[r(z)][\emptyset][s - t][f] \\
+& & \ldots + Y[l(z)][r][t][d] \times Y[r(z)][\emptyset][r + s - t][f]\\
+& & \ldots + Y[l(z)][\emptyset][t][d] \times Y[r(z)][r][s - t][f] \\
+& & \ldots + Y[l(z)][\emptyset][r + t][d] \times Y[r(z)][r][s - t][f]\\
+& & \ldots + Y[l(z)][\emptyset][r + t][d] \times Y[r(z)][\emptyset][r + s - t][f] \Bigg)
 \end{eqnarray*}
 
 
