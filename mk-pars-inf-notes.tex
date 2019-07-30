@@ -66,7 +66,7 @@ $\Pr(x_i\mbox{ is variable}\mid T)$ is typically calculated by augmenting the re
 \end{eqnarray*}
 where $K$ is the number of character states and $C(j)$ denotes a 
 character that is made up of a column of taxa all displaying state $j$.
-Because there are only $K$ fake columns for every character, the calculation is only $(1+K)$ times slower than a likelihood calculation that does not correct for ascertainment bias.
+Because there are only $K$ fake columns for every character, the calculation requires only $(1+K)$ times computation of likelihood calculation that does not correct for ascertainment bias.
 
 
 As noted by \citet{MatzkeI2018}, if a researcher only collects parsimony informative sites, then a different form of ascertainment bias correction is needed.
@@ -135,25 +135,21 @@ Let $\nu_{l(z)}$ and $\nu_{r(z)}$ denote the  branch lengths leading to the left
 \subsection{Parent of a cherry}
 If $z$ is the parent of two tips then initialize $Y[z][][][]$ using the following rules
 
-For every $c\in \mathcal{A}$:
+For every $c\in \mathcal{A}$, and every $d\in \mathcal{A}$:
 \begin{eqnarray*}
-Y[z][c][\emptyset][c] & = & \Pr(c\rightarrow c\mid \nu_{l(z)})\Pr(c\rightarrow c\mid \nu_{r(z)})
+Y[z][d][\emptyset][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)})
 \end{eqnarray*}
 where  $\Pr(i\rightarrow j\mid \nu_{k})$ denotes the probability of an 
 	seeing the descendant state $j$ if the ancestral state is $i$ and 
 	the edge length is $\nu_{k}$.
 
 
-For every $c\in \mathcal{A}$ and every single state $d \in \mathcal{B}(c)$:
+For every $c\in \mathcal{A}$ and every single state $d \in \mathcal{A}$ and
+every $f\in \mathcal{B}(d)$:
 \begin{eqnarray*}
-Y[z][\emptyset][\{c,d\}][c] & = & \Pr(c\rightarrow c\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)}) + \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow c\mid \nu_{r(z)}) \\
-Y[z][d][\emptyset][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)})
+Y[z][\emptyset][\{d, f\}][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow f\mid \nu_{r(z)}) + \Pr(c\rightarrow f\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)}) 
 \end{eqnarray*}
 
-For every $c\in \mathcal{A}$ and every single state $d \in \mathcal{B}(c)$ and every single state $f\in\mathcal{B}(c,d)$:
-\begin{eqnarray*}
-Y[z][\emptyset][\{d,f\}][c] & = & \Pr(c\rightarrow d\mid \nu_{l(z)})\Pr(c\rightarrow f\mid \nu_{r(z)}) + \Pr(c\rightarrow f\mid \nu_{l(z)})\Pr(c\rightarrow d\mid \nu_{r(z)})
-\end{eqnarray*}
 
 All other elements of $Y[z][][][]$ are set to 0.
 
